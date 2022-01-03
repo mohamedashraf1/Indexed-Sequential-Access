@@ -1,30 +1,58 @@
 #include <iostream>
 #include <vector>
+#include <fstream>
 
 using namespace std;
 
-int m, n;
-
 struct Record{
-int key;
-int value;
+    int key;
+    int value;
 };
 
 struct Block{
-int ikey, ivalue;
-vector<Record> myRecords;
+    int ikey, ivalue;
+    vector<Record> myRecords;
 };
+
+bool CreateRecordFile(char *cIndexFile, int m, int n) // returns true if success and false if
+// failure. m is the number of blocks in the file and n is the number of records in a block
+{
+    fstream data(cIndexFile ,ios::out);
+    if(data.fail())
+        return false;
+    for(int i = 0; i < m ; i++){
+        Block block;
+        block.ikey = -1;
+        if(i == m-1){ /// last block should have ival = -1
+            block.ivalue = -1;
+        }
+        else{
+            block.ivalue = i +1;
+        }
+
+        /// writing the ikey and ival of the block
+        data.write((char*)&block.ikey,sizeof(block.ikey));
+        data.write((char*)&block.ivalue,sizeof(block.ivalue));
+
+        for(int i = 0 ; i < n ; i++){/// fill each block with dummy records
+            Record rec;
+            rec.key = -1;
+            rec.value = -1;
+
+            data.write((char*)&rec.key,sizeof(rec.key));
+            data.write((char*)&rec.value,sizeof(rec.value));
+        }
+    }
+    return true;
+}
 
 int main()
 {
-
+    cout<<CreateRecordFile("data.txt", 4, 4)<<endl;
 
     return 0;
 }
 
-
-bool CreateRecordFile(char *cIndexFile, int m, int n); // returns true if success and false if
-// failure. m is the number of blocks in the file and n is the number of records in a block
 
 
 int InsertVal(char *cIndexFile, int iToken, int iKey);// returns index of block in which iToken
@@ -32,11 +60,11 @@ int InsertVal(char *cIndexFile, int iToken, int iKey);// returns index of block 
 
 
 int GetKey(char *cIndexFile, int iBlock, int iRecord); // get value iKey stored in a given block
-// iBlock and given record iRecord ï¿½ returns -1 if record on block is empty
+// iBlock and given record iRecord – returns -1 if record on block is empty
 
 
 int GetVal(char *cIndexFile, int iBlock, int iRecord); // get value iVal stored in a given block
-//iBlock and given record iRecord ï¿½ returns -1 if record on block is empty
+//iBlock and given record iRecord – returns -1 if record on block is empty
 
 int GetBlockIndex (char *cIndexFile, int iToken); // get index of block containing iKey = iToken
 //and -1 if record does not exist
