@@ -43,20 +43,31 @@ bool CreateRecordFile(char *cIndexFile, int m, int n) // returns true if success
             data.write((char*)&rec.value,sizeof(rec.value));
         }
     }
+    data.close();
     return true;
+}
+
+int InsertVal(char *cIndexFile, int iToken, int iKey)// returns index of block in which iToken
+//and iKey were stored and -1 if failed, where iKey is the key of the record, and iToken = iVal in the record.
+{
+    fstream data(cIndexFile, ios::in);
+    data.seekg(0);/// seek the beginning of the file
+    int headerIkey, headerIval;
+    data.read((char*)&headerIkey,sizeof(headerIkey));
+    data.read((char*)&headerIval,sizeof(headerIval));
+
+
+    return 1;
 }
 
 int main()
 {
-    cout<<CreateRecordFile("data.txt", 4, 4)<<endl;
-
+    //CreateRecordFile("data.txt", 4, 4);
+    InsertVal("data.txt", 4, 4);
     return 0;
 }
 
 
-
-int InsertVal(char *cIndexFile, int iToken, int iKey);// returns index of block in which iToken
-//and iKey were stored and -1 if failed, where iKey is the key of the record, and iToken = iVal in the record.
 
 
 int GetKey(char *cIndexFile, int iBlock, int iRecord); // get value iKey stored in a given block
